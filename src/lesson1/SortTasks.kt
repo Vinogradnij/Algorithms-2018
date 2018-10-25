@@ -2,6 +2,9 @@
 
 package lesson1
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 /**
  * Сортировка времён
  *
@@ -95,7 +98,10 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  */
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val input: List<String> = Files.readAllLines(Paths.get(inputName))
+    val inputToDouble: List<Double> = input.map { it.toDouble() }.sorted()
+    val output: List<String> = inputToDouble.map { it.toString() }
+    Files.write(Paths.get(outputName), output)
 }
 
 /**
@@ -128,7 +134,33 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  */
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    val input: List<String> = Files.readAllLines(Paths.get(inputName))
+    val box = mutableMapOf<Int, Int>()
+    var key: Int
+    input.map { it ->
+        key = it.toInt()
+        if (box[key] == null ) box[key] = 0
+        box[key] = box[key]!! + 1
+    }
+    var max = 0
+    var keyOfMax = box.keys.max()
+    box.map { it ->
+        when  {
+            it.value > max ->  {
+                max = it.value
+                keyOfMax = it.key
+            }
+            (it.value == max) && (it.key < keyOfMax!!) -> {
+                max = it.value
+                keyOfMax = it.key
+            }
+        }
+    }
+    val output = input.filter { it != keyOfMax.toString() }.toMutableList()
+    for (i in 0 until max) {
+        output.add(keyOfMax.toString())
+    }
+    Files.write(Paths.get(outputName), output)
 }
 
 /**
