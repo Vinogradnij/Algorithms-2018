@@ -97,6 +97,8 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
+//Ресурсоемкость O(n)
+//Трудоемкость O(n)
 fun sortTemperatures(inputName: String, outputName: String) {
     val input: List<String> = Files.readAllLines(Paths.get(inputName))
     val inputToDouble: List<Double> = input.map { it.toDouble() }.sorted()
@@ -133,6 +135,8 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  */
+//Ресурсоемкость O(n)
+//Трудоемкость O(n)
 fun sortSequence(inputName: String, outputName: String) {
     val input: List<String> = Files.readAllLines(Paths.get(inputName))
     val box = mutableMapOf<Int, Int>()

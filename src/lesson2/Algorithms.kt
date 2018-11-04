@@ -2,6 +2,9 @@
 
 package lesson2
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -26,8 +29,23 @@ package lesson2
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+//Ресурсоемкость O(n)
+//Трудоемкость O(n*m)
 fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
-    TODO()
+    val input: List<Int> = Files.readAllLines(Paths.get(inputName)).map { it.toInt() }
+    var indexOfBuying = 0
+    var indexOfSelling = 0
+    var max = 0
+    for (buying in 0 until input.size) {
+        for (selling in (buying + 1) until input.size) {
+            if (input[selling] - input[buying] > max) {
+                max = input[selling] - input[buying]
+                indexOfBuying = buying.plus(1)
+                indexOfSelling = selling .plus(1)
+            }
+        }
+    }
+    return indexOfBuying to indexOfSelling
 }
 
 /**
@@ -91,8 +109,35 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
+//Ресурсоемкость O(n)
+//Трудоемкость O(n*m)
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    var length = 0
+    var maxResult = ""
+    var result = ""
+    var indexOfFirst:Int
+    var indexOfSecond:Int
+    for (i in 0 until first.length) {
+        for (j in 0 until second.length) {
+            if (first[i] == second[j]) {
+                indexOfFirst = i
+                indexOfSecond = j
+                while (indexOfFirst < first.length && indexOfSecond < second.length
+                && first[indexOfFirst] == second[indexOfSecond]) {
+                    result += first[indexOfFirst]
+                    indexOfFirst++
+                    indexOfSecond++
+                    length++
+                }
+                if (length > maxResult.length) {
+                    maxResult = result
+                }
+                length = 0
+                result = ""
+            }
+        }
+    }
+    return maxResult
 }
 
 /**
