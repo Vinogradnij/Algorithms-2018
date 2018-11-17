@@ -53,9 +53,93 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
     /**
      * Удаление элемента в дереве
      * Средняя
+     * рес O(1)
+     *  худшем O(n)
+     *  O(logn)
      */
+
+    private fun findNodeAndFather(value: T): Pair<Node<T>, Node<T>?> {
+        if (!contains(value)) throw IllegalAccessError("Element not found")
+        var father: Node<T>? = null
+        var node = root!!
+        var comparison: Int
+        while (node.value != value) {
+            father = node
+            comparison = value.compareTo(node.value)
+            node = if (comparison < 0) node.left!!
+            else node.right!!
+        }
+        return node to father
+    }
+
+    private fun removeIfWeHaveChildren(nodeToRemove: Node<T>, father: Node<T>?) {
+        var minNodeInRight = nodeToRemove.right!!
+        var fatherOfMin = nodeToRemove
+        while (minNodeInRight.left != null) {
+            fatherOfMin = minNodeInRight
+            minNodeInRight = minNodeInRight.left!!
+        }
+        if (nodeToRemove.right != minNodeInRight) {
+            minNodeInRight.right = nodeToRemove.right
+            fatherOfMin.left = null
+        }
+        minNodeInRight.left = nodeToRemove.left
+        if (father != null) {
+            if (nodeToRemove == father.left) father.left = minNodeInRight
+            else father.right = minNodeInRight
+        }
+        else {
+            root = minNodeInRight
+        }
+    }
+
+    private fun removeRoot() {
+        when {
+            root!!.left != null && root!!.right != null-> {
+                removeIfWeHaveChildren(root!!, null)
+            }
+            root!!.left == null && root!!.right != null -> {
+                root = root!!.right
+            }
+            root!!.left != null && root!!.right == null -> {
+                root = root!!.left
+            }
+            root!!.left == null && root!!.right == null -> {
+                root = null
+            }
+        }
+    }
+
     override fun remove(element: T): Boolean {
-        TODO()
+        val nodeToRemove = findNodeAndFather(element).first
+        val father = findNodeAndFather(element).second
+        if (father == null) {
+            removeRoot()
+        }
+        else {
+            when {
+                nodeToRemove.left == null && nodeToRemove.right == null -> {
+                    if (nodeToRemove == father.left) father.left = null
+                    else father.right = null
+                }
+
+                nodeToRemove.left != null && nodeToRemove.right == null -> {
+                    if (nodeToRemove == father.left) father.left = nodeToRemove.left
+                    else father.right = nodeToRemove.left
+                }
+
+                nodeToRemove.left == null && nodeToRemove.right != null -> {
+                    if (nodeToRemove == father.left) father.left = nodeToRemove.right
+                    else father.right = nodeToRemove.right
+                }
+
+                nodeToRemove.left != null && nodeToRemove.right != null -> {
+                    removeIfWeHaveChildren(nodeToRemove, father)
+                }
+            }
+        }
+        size--
+        return true
     }
 
     override operator fun contains(element: T): Boolean {
