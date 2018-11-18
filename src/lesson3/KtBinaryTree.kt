@@ -199,7 +199,7 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
             when {
                 root == null || (current != null && current!!.value == last()) -> return null
                 current == null -> return findMinNode(root!!)
-                current!!.right == null -> {
+                current!!.right == null && !stack.isEmpty() -> {
                     current = stack.peek()
                     return stack.pop()
                 }
@@ -226,8 +226,15 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
          * Удаление следующего элемента
          * Сложная
          */
+
+        //Ресурсоемкость O(N)
+        //Трудоемкость O(logN), в худшем случае O(N)
+
         override fun remove() {
-            TODO()
+            if (current!!.value != last())
+                remove(current!!.value)
+            else
+                remove(last())
         }
     }
 
