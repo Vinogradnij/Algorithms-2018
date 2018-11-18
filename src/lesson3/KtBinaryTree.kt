@@ -1,7 +1,10 @@
 package lesson3
 
-import java.util.SortedSet
+import java.util.*
 import kotlin.NoSuchElementException
+import java.util.Stack
+
+
 
 // Attention: comparable supported but comparator is not
 class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSortedSet<T> {
@@ -53,10 +56,10 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
     /**
      * Удаление элемента в дереве
      * Средняя
-     * рес O(1)
-     *  худшем O(n)
-     *  O(logn)
      */
+
+    //Ресурсоемкость O(1)
+    //Трудоемкость O(logN), в худшем случае O(N)
 
     private fun findNodeAndFather(value: T): Pair<Node<T>, Node<T>?> {
         if (!contains(value)) throw IllegalAccessError("Element not found")
@@ -75,15 +78,25 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
     private fun removeIfWeHaveChildren(nodeToRemove: Node<T>, father: Node<T>?) {
         var minNodeInRight = nodeToRemove.right!!
         var fatherOfMin = nodeToRemove
+
         while (minNodeInRight.left != null) {
             fatherOfMin = minNodeInRight
             minNodeInRight = minNodeInRight.left!!
         }
-        if (nodeToRemove.right != minNodeInRight) {
-            minNodeInRight.right = nodeToRemove.right
-            fatherOfMin.left = null
+
+        when {
+            nodeToRemove.right != minNodeInRight && minNodeInRight.right != null -> {
+                fatherOfMin.left = minNodeInRight.right
+                minNodeInRight.right = nodeToRemove.right
+            }
+            nodeToRemove.right != minNodeInRight && minNodeInRight.right == null -> {
+                fatherOfMin.left = null
+                minNodeInRight.right = nodeToRemove.right
+            }
         }
+
         minNodeInRight.left = nodeToRemove.left
+
         if (father != null) {
             if (nodeToRemove == father.left) father.left = minNodeInRight
             else father.right = minNodeInRight
@@ -162,18 +175,49 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
     inner class BinaryTreeIterator : MutableIterator<T> {
 
         private var current: Node<T>? = null
+        private val stack = Stack<Node<T>>()
+        private var hasNextNode = false
 
         /**
          * Поиск следующего элемента
          * Средняя
          */
-        private fun findNext(): Node<T>? {
-            TODO()
+
+        //Ресурсоемкость O(N)
+        //Трудоемкость O(logN), в худшем случае O(N)
+
+        private fun findMinNode(node: Node<T>): Node<T> {
+            current = node
+            while (current!!.left != null) {
+                stack.push(current)
+                current = current!!.left
+            }
+            return current!!
         }
 
-        override fun hasNext(): Boolean = findNext() != null
+        private fun findNext(): Node<T>? {
+            when {
+                root == null || (current != null && current!!.value == last()) -> return null
+                current == null -> return findMinNode(root!!)
+                current!!.right == null -> {
+                    current = stack.peek()
+                    return stack.pop()
+                }
+                current!!.right != null -> return findMinNode(current!!.right!!)
+            }
+            return null
+        }
+
+        override fun hasNext(): Boolean {
+            hasNextNode = true
+            return findNext() != null
+        }
 
         override fun next(): T {
+            if (hasNextNode) {
+                hasNextNode = false
+                return current!!.value
+            }
             current = findNext()
             return (current ?: throw NoSuchElementException()).value
         }
