@@ -88,8 +88,32 @@ fun Graph.minimumSpanningTree(): Graph {
  *
  * Эта задача может быть зачтена за пятый и шестой урок одновременно
  */
+//Трудоемкость O(n^2)
+//Ресурсоемкость O(n)
 fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
-    TODO()
+    val allResults = mutableListOf<Set<Graph.Vertex>>()
+    val candidates = mutableSetOf<Graph.Vertex>()
+    val exists = mutableSetOf<Graph.Vertex>()
+
+    for (vertex in this.vertices) {
+        this.vertices
+                .stream()
+                .filter { anotherVertex ->
+                    !this.getNeighbors(vertex).contains(anotherVertex) && !exists.contains(anotherVertex)
+                }
+                .forEachOrdered { anotherVertex ->
+                    exists.addAll(this.getNeighbors(anotherVertex))
+                    candidates.add(anotherVertex)
+                }
+        allResults.add(candidates)
+    }
+    var result = setOf<Graph.Vertex>()
+    for (allResult in allResults) {
+        if (result.size < allResult.size) {
+            result = allResult
+        }
+    }
+    return result
 }
 
 /**
@@ -112,6 +136,22 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
+//Трудоемкость O(n)
+//Ресурсоемкость O(n)
 fun Graph.longestSimplePath(): Path {
-    TODO()
+    val res = mutableSetOf<Graph.Vertex>()
+    find(this, this.get("A")!!, res)
+    res.remove(this.get("A")!!)
+    return Path(ArrayList<Graph.Vertex>(res), res.size)
+}
+
+fun find(graph: Graph, vertex: Graph.Vertex, result: MutableSet<Graph.Vertex>) {
+    for (edge in graph.edges) {
+        if (edge.begin.name == vertex.name) {
+            graph.vertices.remove(edge.begin)
+            graph.vertices.remove(edge.end)
+            find(graph, edge.end, result)
+        }
+    }
+    result.add(vertex)
 }
