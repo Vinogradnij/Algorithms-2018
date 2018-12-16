@@ -32,6 +32,7 @@ abstract class AbstractDynamicTests {
     }
 
     fun longestIncreasingSubSequence(longestIncreasingSubSequence: (List<Int>) -> List<Int>) {
+        assertEquals(listOf(5, 10, 12, 24), longestIncreasingSubSequence(listOf(5, 10, 9, 6, 12, 3, 24, 7, 8)))
         assertEquals(listOf(), longestIncreasingSubSequence(listOf()))
         assertEquals(listOf(1), longestIncreasingSubSequence(listOf(1)))
         assertEquals(listOf(1, 2), longestIncreasingSubSequence(listOf(1, 2)))
@@ -41,8 +42,14 @@ abstract class AbstractDynamicTests {
         )
         assertEquals(listOf(2, 8, 9, 12), longestIncreasingSubSequence(listOf(2, 8, 5, 9, 12, 6)))
         assertEquals(listOf(23, 34, 56, 87, 91, 98, 140, 349), longestIncreasingSubSequence(listOf(
-                23, 76, 34, 93, 123, 21, 56, 87, 91, 12, 45, 98, 140, 12, 5, 38, 349, 65, 94,
-                45, 76, 15, 99, 100, 88, 84, 35, 88
+                23, 76, 34, 93, 123, 21, 56, 87, 91, 12, 45, 98, 140, 12, 5, 38, 1, 1, 349
+        )))
+        assertEquals(listOf(23, 34, 56, 87, 91, 98, 140, 349), longestIncreasingSubSequence(listOf(
+                23, 76, 34, 93, 123, 21, 56, 87, 91, 12, 45, 98, 140, 12, 5, 38, 349
+        )))
+        assertEquals(listOf(23, 34, 56, 87, 91, 98, 140, 349), longestIncreasingSubSequence(listOf(
+        23, 76, 34, 93, 123, 21, 56, 87, 91, 12, 45, 98, 140, 12, 5, 38, 349, 65, 94,
+        45, 76, 15, 99, 100, 88, 84, 35, 88
         )))
     }
 
@@ -50,6 +57,8 @@ abstract class AbstractDynamicTests {
         assertEquals(1, shortestPathOnField("input/field_in2.txt"))
         assertEquals(12, shortestPathOnField("input/field_in1.txt"))
         assertEquals(43, shortestPathOnField("input/field_in3.txt"))
+        assertEquals(0, shortestPathOnField("input/field_in4.txt"))
+        assertEquals(10, shortestPathOnField("input/field_in5.txt"))
     }
 
 }
